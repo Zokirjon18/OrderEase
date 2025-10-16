@@ -14,7 +14,7 @@ namespace OrderEase.Service.Services.Customers
             var createdCustomer = await customerRepository.InsertAsync(new Customer
             {
                 Address = model.Address,
-                CreatedDate = DateTime.Now,
+                CreatedDate = DateTime.UtcNow,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Email,
@@ -70,7 +70,10 @@ namespace OrderEase.Service.Services.Customers
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                query = query.Where(c => c.FirstName.ToLower().Contains(name.ToLower()) || c.LastName.ToLower().Contains(name.ToLower()));
+                name = name.ToLower();
+                query = query.Where(c => 
+                c.FirstName.ToLower().Contains(name) || 
+                c.LastName.ToLower().Contains(name));
             }
 
             if (string.IsNullOrWhiteSpace(phone))

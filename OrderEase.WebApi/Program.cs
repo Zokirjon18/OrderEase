@@ -1,49 +1,62 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OrderEase.DataAccess.Contexts;
 using OrderEase.DataAccess.Repositories;
 using OrderEase.Service.Services.Customers;
 using OrderEase.Service.Services.Orders;
 using OrderEase.Service.Services.Products;
 using OrderEase.Service.Services.Reports;
+using OrderEase.WebApi.Middlewares;
 
-namespace OrderEase.WebApi
-{
-    public class Program
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<AppDbContext>(option =>
+option.UseNpgsql(builder.Configuration.GetConnectionString("PosgreSqlConnection")));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(option =>
     {
-        public static void Main(string[] args)
+        option.TokenValidationParameters = new TokenValidationParameters
         {
-            var builder = WebApplication.CreateBuilder(args);
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["JWT:Issuer"],
+            ValidAudience = builder.Configuration["JWT:Audience"]
+        };
+    });
 
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAuthorization();
 
-            builder.Services.AddSwaggerGen();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddTransient<IReportService, ReportService>();
 
-            builder.Services.AddDbContext<AppDbContext>(option => 
-            option.UseNpgsql(builder.Configuration.GetConnectionString("PosgreSqlConnection")));
+var app = builder.Build();
 
-            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+app.UseSwagger();
 
-            builder.Services.AddScoped<ICustomerService, CustomerService>();
-            builder.Services.AddScoped<IOrderService, OrderService>();
-            builder.Services.AddScoped<IProductService, ProductService>();
-            builder.Services.AddTransient<IReportService, ReportService>();
+app.UseSwaggerUI();
 
-            var app = builder.Build();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            app.UseSwagger();
+app.UseAuthentication();
 
-            app.UseSwaggerUI();
+app.UseAuthorization();
 
-            // Configure the HTTP request pipeline.
+app.UseHttpsRedirection();
 
-            app.UseHttpsRedirection();
+app.UseAuthorization();
 
-            app.UseAuthorization();
+app.MapControllers();
 
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
-}
+app.Run();

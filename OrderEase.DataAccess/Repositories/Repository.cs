@@ -16,7 +16,7 @@ namespace OrderEase.DataAccess.Repositories
 
         public async Task<TEntity> InsertAsync(TEntity entity)
         {
-            entity.CreatedAt = DateTime.Now;
+            entity.CreatedAt = DateTime.UtcNow;
             var createdEntity = (await _context.AddAsync(entity)).Entity;
             await _context.SaveChangesAsync();
 
@@ -25,14 +25,14 @@ namespace OrderEase.DataAccess.Repositories
 
         public async Task UpdateAsync(TEntity entity)
         {
-            entity.UpdatedAt = DateTime.Now;
+            entity.UpdatedAt = DateTime.UtcNow;
             _context.Update(entity);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(TEntity entity)
         {
-            entity.DeletedAt = DateTime.Now;
+            entity.DeletedAt = DateTime.UtcNow;
             entity.IsDeleted = true;
 
             _context.Update(entity);
