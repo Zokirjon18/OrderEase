@@ -4,143 +4,65 @@ using OrderEase.Service.Services.Customers;
 using OrderEase.Service.Services.Customers.Models;
 using OrderEase.WebApi.Models;
 
-namespace OrderEase.WebApi.Controllers
+namespace OrderEase.WebApi.Controllers;
+
+public class CustomersController(ICustomerService customerService) : BaseController
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class CustomersController(ICustomerService customerService) : ControllerBase
+    [HttpPost]
+    public async Task<IActionResult> PostAsync(CustomerCreateModel model)
     {
-        [HttpPost]
-        public async Task<IActionResult> PostAsync(CustomerCreateModel model)
+
+        await customerService.CreateAsync(model);
+
+        return Ok(new Response
         {
-            try
-            {
-                await customerService.CreateAsync(model);
+            Status = 201,
+            Message = "success",
+        });
+    }
 
-                return Ok(new Response
-                {
-                    Status = 201,
-                    Message = "success",
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = 400,
-                    Message = ex.Message
-                });
-            }
-        }
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> PutAsync(int id, [FromBody] CustomerUpdateModel model)
+    {
+        await customerService.UpdateAsync(id, model);
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> PutAsync(int id, [FromBody] CustomerUpdateModel model)
+        return Ok(new Response
         {
+            Status = 200,
+            Message = "success"
+        });
+    }
 
-            try
-            {
-                await customerService.UpdateAsync(id, model);
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteAsync(int id)
+    {
+        await customerService.DeleteAsync(id);
 
-                return Ok(new Response
-                {
-                    Status = 200,
-                    Message = "success"
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ex.StatusCode,
-                    Message = ex.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response()
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
+        return Ok();
+    }
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetAsync(int id)
+    {
+        var customer = await customerService.GetAsync(id);
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        return Ok(new Response<CustomerViewModel>
         {
-            try
-            {
-                await customerService.DeleteAsync(id);
+            Status = 200,
+            Message = "success",
+            Data = customer
+        });
+    }
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetAsync(int id)
+    [HttpGet]
+    public async Task<IActionResult> GetAllAsync()
+    {
+        var customers = await customerService.GetAllAsync();
+
+        return Ok(new Response<List<CustomerViewModel>>
         {
-            try
-            {
-                var customer = await customerService.GetAsync(id);
-
-                return Ok(new Response<CustomerViewModel>
-                {
-                    Status = 200,
-                    Message = "success",
-                    Data = customer
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ex.StatusCode,
-                    Message = ex.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response()
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            try
-            {
-                var customers = await customerService.GetAllAsync();
-
-                return Ok(new Response<List<CustomerViewModel>>
-                {
-                    Status = 200,
-                    Message = "success",
-                    Data = customers
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ex.StatusCode,
-                    Message = ex.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response()
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
+            Status = 200,
+            Message = "success",
+            Data = customers
+        });
     }
 }

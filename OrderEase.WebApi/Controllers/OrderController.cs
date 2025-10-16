@@ -1,125 +1,58 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderEase.Domain.Enums;
-using OrderEase.Service.Exceptions;
 using OrderEase.Service.Services.Orders;
 using OrderEase.Service.Services.Orders.Models;
 using OrderEase.WebApi.Models;
 
-namespace OrderEase.WebApi.Controllers
+namespace OrderEase.WebApi.Controllers;
+
+public class OrderController(IOrderService orderService) : BaseController
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class OrderController(IOrderService orderService) : ControllerBase
+    [HttpPost]
+    public async Task<IActionResult> PostAsync(OrderCreateModel model)
     {
-        [HttpPost]
-        public async Task<IActionResult> PostAsync(OrderCreateModel model)
+        await orderService.CreateAsync(model);
+
+        return Ok(new Response
         {
-            try
-            {
-                await orderService.CreateAsync(model);
-
-                return Ok(new Response
-                {
-                    Status = 201,
-                    Message = "success",
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = 400,
-                    Message = ex.Message
-                });
-            }
-        }
+            Status = 201,
+            Message = "success",
+        });
+    }
 
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteAsync(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteAsync(long id)
+    {
+        await orderService.CancelAsync(id);
+
+        return Ok();
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetAsync(long id)
+    {
+        var product = await orderService.GetAsync(id);
+
+        return Ok(new Response<OrderViewModel>
         {
-            try
-            {
-                await orderService.CancelAsync(id);
+            Status = 200,
+            Message = "success",
+            Data = product
+        });
+    }
 
-                return Ok();
-            }
-            catch (ArgumentIsNotValidException ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ex.StatusCode,
-                    Message = ex.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetAsync(long id)
+    [HttpGet]
+    public async Task<IActionResult> GetAllAsync(long? customerId = null, OrderStatus? status = null)
+    {
+        var products = await orderService.GetAllAsync(customerId, status);
+
+        return Ok(new Response<IEnumerable<OrderViewModel>>
         {
-            try
-            {
-                var product = await orderService.GetAsync(id);
-
-                return Ok(new Response<OrderViewModel>
-                {
-                    Status = 200,
-                    Message = "success",
-                    Data = product
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ex.StatusCode,
-                    Message = ex.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response()
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync(long? customerId = null, OrderStatus? status = null)
-        {
-            try
-            {
-                var products = await orderService.GetAllAsync(customerId, status);
-
-                return Ok(new Response<IEnumerable<OrderViewModel>>
-                {
-                    Status = 200,
-                    Message = "success",
-                    Data = products
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(new Response
-                {
-                    Status = ex.StatusCode,
-                    Message = ex.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new Response()
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
+            Status = 200,
+            Message = "success",
+            Data = products
+        });
     }
 }
 
