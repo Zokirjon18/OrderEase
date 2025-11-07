@@ -89,7 +89,7 @@ namespace OrderEase.Service.Services.Products
                 .SelectAllAsQueryable()
                 .Where(product => !product.IsDeleted);
 
-            if (string.IsNullOrWhiteSpace(category))
+            if (!string.IsNullOrWhiteSpace(category))
             {
                 query = query.Where(p => p.Category.ToLower().Contains(category.ToLower()));    
             }
