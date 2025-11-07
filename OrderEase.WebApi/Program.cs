@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OrderEase.DataAccess.Contexts;
 using OrderEase.DataAccess.Repositories;
+using OrderEase.Service.Services.Auth;
 using OrderEase.Service.Services.Customers;
 using OrderEase.Service.Services.Orders;
 using OrderEase.Service.Services.Products;
@@ -42,6 +43,7 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddTransient<IReportService, ReportService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 

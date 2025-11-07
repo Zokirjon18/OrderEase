@@ -7,8 +7,6 @@ using OrderEase.Service.Services.Reports.Models;
 namespace OrderEase.Service.Services.Reports
 {
     public class ReportService(
-        IRepository<Product> productRepository,
-        IRepository<Customer> customerRository,
         IRepository<Order> orderRepository,
         IRepository<OrderDetail> orderDetailRepository) : IReportService
     {
@@ -19,7 +17,7 @@ namespace OrderEase.Service.Services.Reports
 
             // product grouping process for determining top ordered products
             var groupedOrderDetails = orderDetailRepository.SelectAllAsQueryable()
-                .Include(od => od.Product.Name)
+                .Include(od => od.Product)
                 .Where(od => od.CreatedAt.Month == DateTime.Now.Month)
                 .GroupBy(od => od.ProductId).ToList();
 
@@ -44,7 +42,7 @@ namespace OrderEase.Service.Services.Reports
 
             // retreiving monthly orders for calculating totalOrders and revenues
             var monthlyOrders = await orderRepository.SelectAllAsQueryable()
-                .Include(o => o.Customer.FirstName)
+                .Include(o => o.Customer)
                 .Where(order => !order.IsDeleted && order.OrderDate.Month == DateTime.Now.Month)
                 .ToListAsync();
 

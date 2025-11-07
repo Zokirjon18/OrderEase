@@ -36,7 +36,11 @@ public class ProductsController(IProductService productService) : BaseController
     {
         await productService.DeleteAsync(id);
 
-        return Ok();
+        return Ok(new Response
+        {
+            Status = 200,
+            Message = "success"
+        });
     }
 
     [HttpGet("{id:int}")]

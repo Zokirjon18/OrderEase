@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OrderEase.DataAccess.Repositories;
 using OrderEase.Domain.Entitites;
 using OrderEase.Service.Exceptions;
@@ -68,7 +67,7 @@ namespace OrderEase.Service.Services.Customers
                 .SelectAllAsQueryable()
                 .Where(c => !c.IsDeleted);
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(name))
             {
                 name = name.ToLower();
                 query = query.Where(c => 
@@ -76,12 +75,12 @@ namespace OrderEase.Service.Services.Customers
                 c.LastName.ToLower().Contains(name));
             }
 
-            if (string.IsNullOrWhiteSpace(phone))
+            if (!string.IsNullOrWhiteSpace(phone))
             {
                 query = query.Where(c => c.PhoneNumber.ToLower().Contains(phone.ToLower()));
             }
 
-            if (string.IsNullOrWhiteSpace(email))
+            if (!string.IsNullOrWhiteSpace(email))
             {
                 query = query.Where(c => c.Email.ToLower().Contains(email.ToLower()));
             }

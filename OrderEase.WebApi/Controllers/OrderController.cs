@@ -26,7 +26,11 @@ public class OrderController(IOrderService orderService) : BaseController
     {
         await orderService.CancelAsync(id);
 
-        return Ok();
+        return Ok(new Response
+        {
+            Status = 200,
+            Message = "success",
+        });
     }
 
     [HttpGet("{id:int}")]

@@ -8,6 +8,6 @@ namespace OrderEase.Service.Services.Customers
         Task UpdateAsync(long id, CustomerUpdateModel model);
         Task DeleteAsync(long id);
         Task<CustomerViewModel> GetAsync(long id);
-        Task<List<CustomerViewModel>> GetAllAsync(string Name = null, string phone = null, string email = null);
+        Task<List<CustomerViewModel>> GetAllAsync(string name = null, string phone = null, string email = null);
     }
 }

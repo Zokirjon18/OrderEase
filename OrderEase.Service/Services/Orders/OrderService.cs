@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
 using OrderEase.DataAccess.Repositories;
 using OrderEase.Domain.Entitites;
 using OrderEase.Domain.Enums;
@@ -9,7 +7,8 @@ using OrderEase.Service.Services.Orders.Models;
 
 namespace OrderEase.Service.Services.Orders
 {
-    public class OrderService(IRepository<Order> orderRepository,
+    public class OrderService(
+        IRepository<Order> orderRepository,
         IRepository<Customer> customerRepository,
         IRepository<OrderDetail> orderDetailRepository,
         IRepository<Product> productRepository) : IOrderService
@@ -24,7 +23,7 @@ namespace OrderEase.Service.Services.Orders
             var createdOrder = await orderRepository.InsertAsync(new Order
             {
                 CustomerId = model.CustomerId,
-                OrderDate = DateTime.Now,
+                OrderDate = DateTime.UtcNow,
                 Status = OrderStatus.Pending,
                 TotalAmount = totalAmount
             });

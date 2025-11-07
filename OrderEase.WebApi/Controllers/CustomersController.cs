@@ -11,7 +11,6 @@ public class CustomersController(ICustomerService customerService) : BaseControl
     [HttpPost]
     public async Task<IActionResult> PostAsync(CustomerCreateModel model)
     {
-
         await customerService.CreateAsync(model);
 
         return Ok(new Response
@@ -38,7 +37,11 @@ public class CustomersController(ICustomerService customerService) : BaseControl
     {
         await customerService.DeleteAsync(id);
 
-        return Ok();
+        return Ok(new Response
+        {
+            Status = 200,
+            Message = "success"
+        });
     }
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetAsync(int id)
@@ -54,9 +57,9 @@ public class CustomersController(ICustomerService customerService) : BaseControl
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<IActionResult> GetAllAsync(string name = null, string phone = null, string email = null)
     {
-        var customers = await customerService.GetAllAsync();
+        var customers = await customerService.GetAllAsync(name,phone,email);
 
         return Ok(new Response<List<CustomerViewModel>>
         {
