@@ -9,7 +9,8 @@ namespace OrderEase.Service.Services.Products
         Task ChangeStockAsync(long id, int stock);
         Task DeleteAsync(long id);
         Task<ProductViewModel> GetAsync(long id);
-        Task<IEnumerable<ProductViewModel>> GetAllAsync(string category = null);
+        Task<ProductUpdateFormModel> GetForUpdateAsync(long id);
         Task<IEnumerable<ProductViewModel>> GetAllFinishedAsync();
+        Task<IEnumerable<ProductViewModel>> GetAllAsync(string category = null);
     }
 }
