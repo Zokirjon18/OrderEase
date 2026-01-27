@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Customers\" />
+    <Folder Include="Views\Dashboard\" />
+    <Folder Include="Views\Orders\" />
+    <Folder Include="Views\Products\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrderEase.Service\OrderEase.Service.csproj" />
+  </ItemGroup>
+
+</Project>

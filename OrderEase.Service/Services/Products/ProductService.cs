@@ -67,6 +67,21 @@ namespace OrderEase.Service.Services.Products
             };
         }
 
+        public async Task<ProductUpdateFormModel> GetForUpdateAsync(long id)
+        {
+            var product = await productRepository.SelectAsync(id)
+                ?? throw new NotFoundException($"No product was found with the ID = {id}");
+
+            return new ProductUpdateFormModel
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Category = product.Category,
+                UnitPrice = product.UnitPrice,
+                Stock = product.Stock
+            };
+        }
+
         public async Task<IEnumerable<ProductViewModel>> GetAllFinishedAsync()
         {
              return await productRepository
